@@ -7,10 +7,10 @@ public class Main {
     public static void main(String[] args) {
         Scanner scn = new Scanner(System.in);
         System.out.println("Enter the plain text: ");
-        String plainText = scn.next();
+        String plainText = scn.nextLine();
 
         System.out.println("Enter a key: ");
-        String givenKey = scn.next();
+        String givenKey = scn.nextLine();
 
         String key = generateKey(plainText, givenKey);
         String cipherText = encrypt(plainText, key);
@@ -31,6 +31,7 @@ public class Main {
     private static String generateKey(String plainText, String givenKey) {
 
         StringBuilder key = new StringBuilder(givenKey);
+        plainText = plainText.replaceAll("\\s","");
 
         for(int i = 0; i < plainText.length(); i++){
             if(i == givenKey.length())
@@ -48,11 +49,16 @@ public class Main {
 
         plainText = plainText.toLowerCase();
         StringBuilder cipherText = new StringBuilder();
+        int offset = 0;
 
         for(int i = 0; i < plainText.length(); i++){
-            int x = (ALPHABET.indexOf(plainText.charAt(i)) + ALPHABET.indexOf(key.charAt(i))) % 26;
-
-            cipherText.append(ALPHABET.charAt(x));
+            if(ALPHABET.indexOf(plainText.charAt(i)) >= 0){
+                int x = (ALPHABET.indexOf(plainText.charAt(i)) + ALPHABET.indexOf(key.charAt(i - offset))) % 26;
+                cipherText.append(ALPHABET.charAt(x));
+            }else if(plainText.charAt(i) == ' '){
+                cipherText.append(' ');
+                offset++;
+            }
         }
 
         return cipherText.toString();
@@ -62,11 +68,16 @@ public class Main {
 
         cipherText = cipherText.toLowerCase();
         StringBuilder plainText = new StringBuilder();
+        int offset = 0;
 
         for(int i = 0; i < cipherText.length(); i++){
-            int x = (ALPHABET.indexOf(cipherText.charAt(i)) - ALPHABET.indexOf(key.charAt(i)) + 26) % 26;
-
-            plainText.append(ALPHABET.charAt(x));
+            if(ALPHABET.indexOf(cipherText.charAt(i)) >= 0) {
+                int x = (ALPHABET.indexOf(cipherText.charAt(i)) - ALPHABET.indexOf(key.charAt(i - offset)) + 26) % 26;
+                plainText.append(ALPHABET.charAt(x));
+            }else if(cipherText.charAt(i) == ' '){
+                plainText.append(' ');
+                offset++;
+            }
         }
 
         return plainText.toString();
